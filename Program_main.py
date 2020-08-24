@@ -1,6 +1,5 @@
 import sys
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QApplication, QMainWindow
 from view.main import Ui_MainWindow
 from openpyxl import load_workbook, Workbook, styles
 from openpyxl.styles.borders import Border, Side
