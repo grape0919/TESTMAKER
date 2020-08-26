@@ -1,12 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
-import sys
-sys.setrecursionlimit(5000)
 
 block_cipher = None
 
 
 a = Analysis(['Program_main.py'],
-             pathex=['C:\\Users\\DELL\\PLAYGROUND\\hkdevstudio\\TESTMAKER'],
+             pathex=['/Users/hongkyokim/git/TESTMAKER'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -37,3 +35,7 @@ coll = COLLECT(exe,
                upx=True,
                upx_exclude=[],
                name='Program_main')
+app = BUNDLE(coll,
+             name='Program_main.app',
+             icon=None,
+             bundle_identifier=None)
