@@ -251,7 +251,7 @@ class WindowClass(QMainWindow, Ui_MainWindow) :
                 QMessageBox.about(self, "시험지 생성 성공", self.outputFilePath+"\n시험지가 생성되었습니다.")
 
             except PermissionError:
-                QMessageBox.about(self, "Warning", self._filePath+"\n파일을 사용중이거나, 권한이 없습니다.")
+                QMessageBox.about(self, "Warning", self.outputFilePath+"\n파일을 사용중이거나, 권한이 없습니다.")
 
 
 
