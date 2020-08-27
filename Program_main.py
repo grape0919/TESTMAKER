@@ -5,7 +5,6 @@ from openpyxl import load_workbook, Workbook, styles
 from openpyxl.styles.borders import Border, Side
 from openpyxl.worksheet.page import PrintPageSetup, PrintOptions
 
-import pandas as pd
 from pathlib import Path
 import random
 class WindowClass(QMainWindow, Ui_MainWindow) :
@@ -73,7 +72,7 @@ class WindowClass(QMainWindow, Ui_MainWindow) :
         
         else:
             
-            self.outputFilePath = str(Path(self._filePath).parent)+'\\'+Path(self._filePath).name.replace(' ', '_').split('.')[0] + self.editFrom.text() + '-' + self.editTo.text() +'_Test.xlsx'
+            self.outputFilePath = str(Path(self._filePath).parent)+'/'+Path(self._filePath).name.replace(' ', '_').split('.')[0] + self.editFrom.text() + '-' + self.editTo.text() +'_Test.xlsx'
             print('outputFilePath : ', self.outputFilePath)
             tempList = []
             for i in range(int(self.editFrom.text()), int(self.editTo.text())+1):
