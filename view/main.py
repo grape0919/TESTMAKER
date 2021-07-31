@@ -10,6 +10,7 @@
 from PyQt5.QtCore import QSize, QRect, QMetaObject
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QRadioButton, QMainWindow, QApplication
+
 import static.staticValues as staticValues
 
 class Ui_MainWindow(object):

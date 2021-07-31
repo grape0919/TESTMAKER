@@ -1,11 +1,10 @@
 import sys
-from PyQt5.QtWidgets import QMessageBox, QFileDialog, QApplication, QMainWindow
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QMainWindow, QApplication
 from view.main import Ui_MainWindow
 from openpyxl import load_workbook, Workbook, styles
 from openpyxl.styles.borders import Border, Side
 from openpyxl.worksheet.page import PrintPageSetup, PrintOptions
 
-import pandas as pd
 from pathlib import Path
 import random
 class WindowClass(QMainWindow, Ui_MainWindow) :
@@ -23,7 +22,6 @@ class WindowClass(QMainWindow, Ui_MainWindow) :
                                             "excel (*.xlsx *.xls)")
         if fname[0]:
             self._filePath = fname[0]
-            #lf.outputFilePath = str(Path(self._filePath).parent)+'\\Test.xlsx'
             self.editFilePath.setText(fname[0])
             
             #파일 열기
@@ -73,6 +71,9 @@ class WindowClass(QMainWindow, Ui_MainWindow) :
             QMessageBox.about(self, "Warning", "모든 설정을 해야합니다.")
         
         else:
+            
+            self.outputFilePath = str(Path(self._filePath).parent)+'/'+Path(self._filePath).name.replace(' ', '_').split('.')[0] + self.editFrom.text() + '-' + self.editTo.text() +'_Test.xlsx'
+            print('outputFilePath : ', self.outputFilePath)
             tempList = []
             for i in range(int(self.editFrom.text()), int(self.editTo.text())+1):
                 for j in range(len(self.all_values[i])) :
@@ -88,29 +89,31 @@ class WindowClass(QMainWindow, Ui_MainWindow) :
                                  top=Side(style='thin'),
                                  bottom=Side(style='thin'))
 
-
-            writer = pd.ExcelWriter(self._filePath, engine='openpyxl')
-
-            writer.book = load_workbook(self._filePath)
             
-            # if truncate_sheet and sheet_name in writer.book.sheetnames:
+
+            # writer = pd.ExcelWriter(self._filePath, engine='openpyxl')
+
+            # writer.book = load_workbook(self._filePath)
+            
+            # # if truncate_sheet and sheet_name in writer.book.sheetnames:
         
-            #     idx = writer.book.sheetnames.index(sheet_name)
+            # #     idx = writer.book.sheetnames.index(sheet_name)
                 
-            #     writer.book.remove(writer.book.worksheets[idx])
+            # #     writer.book.remove(writer.book.worksheets[idx])
                 
-            #     writer.book.create_sheet(sheet_name, idx)
+            # #     writer.book.create_sheet(sheet_name, idx)
 
-            # copy existing sheets
-            writer.sheets = {ws.title:ws for ws in writer.book.worksheets}
+            # # copy existing sheets
+            # writer.sheets = {ws.title:ws for ws in writer.book.worksheets}
 
 
-            # write_wb = Workbook() 
+            write_wb = Workbook() 
  
             # 이름이 있는 시트를 생성
-            write_ws = writer.book.create_sheet('시험지')
-            #del_ws = write_wb['Sheet']
-            #write_wb.remove(del_ws)
+            # write_ws = writer.book.create_sheet('시험지')
+            write_ws = write_wb.create_sheet('시험지')
+            del_ws = write_wb['Sheet']
+            write_wb.remove(del_ws)
             
             write_ws['B3'] = '이름 : '
             # write_ws['B3'].font = write_ws['B3'].font.copy(bold=True)
@@ -150,21 +153,17 @@ class WindowClass(QMainWindow, Ui_MainWindow) :
                     write_ws.row_dimensions[i+6].height = 30
                     write_ws.cell(i+6, 2, i+1)
                     write_ws.cell(i+6, 3, testWordList[i][0])
-                    write_ws.cell(i+6, 4, testWordList[i][1])
                     write_ws.cell(i+6, 5, (i+halfNumOfWord+1))
                     if i+halfNumOfWord < numOfWord :
                         write_ws.cell(i+6, 6, testWordList[i+halfNumOfWord][0])
-                        write_ws.cell(i+6, 7, testWordList[i+halfNumOfWord][1])
                     
             elif self.RB_Korean.isChecked() :
                 for i in range(halfNumOfWord):
                     write_ws.row_dimensions[i+6].height = 30
                     write_ws.cell(i+6, 2, i+1)
                     write_ws.cell(i+6, 3, testWordList[i][1])
-                    write_ws.cell(i+6, 5, (i+halfNumOfWord+1))
                     if i+halfNumOfWord < numOfWord :
                         write_ws.cell(i+6, 6, testWordList[i+halfNumOfWord][1])
-                        write_ws.cell(i+6, 7, testWordList[i+halfNumOfWord][0])
 
 
             elif self.RB_EK.isChecked() :
@@ -181,11 +180,9 @@ class WindowClass(QMainWindow, Ui_MainWindow) :
                     write_ws.row_dimensions[i+6].height = 30
                     write_ws.cell(i+6, 2, i+1)
                     write_ws.cell(i+6, 3, testWordList[i][0])
-                    write_ws.cell(i+6, 4, testWordList[i][1])
                     write_ws.cell(i+6, 5, (i+halfNumOfWord+1))
                     if i+halfNumOfWord < numOfWord :
                         write_ws.cell(i+6, 6, testWordList[i+halfNumOfWord][0])
-                        write_ws.cell(i+6, 7, testWordList[i+halfNumOfWord][1])
 
                 
             write_ws.row_dimensions[halfNumOfWord+7].height = 30
@@ -194,12 +191,66 @@ class WindowClass(QMainWindow, Ui_MainWindow) :
             write_ws.page_setup = PrintPageSetup(worksheet=write_ws, scale=50)  
             write_ws.print_options = PrintOptions(gridLinesSet=True)
 
+            # 답안지 생성
+            # 이름이 있는 시트를 생성
+            # write_ws = writer.book.create_sheet('시험지')
+            write_ws = write_wb.create_sheet('답안지')
+            
+            write_ws['B3'] = '이름 : '
+            # write_ws['B3'].font = write_ws['B3'].font.copy(bold=True)
+            write_ws['B4'] = '범위 : '
+            # write_ws['B4'].font = write_ws['B4'].font.copy(font_styles)
+            write_ws['C4'] = self.editFrom.text() + " - " + self.editTo.text()
+            # write_ws['C4'].font = write_ws['C4'].font.copy(font_styles)
+
+            write_ws.column_dimensions['A'].width = 5
+            write_ws.column_dimensions['B'].width = 5 
+            write_ws.column_dimensions['C'].width = 30
+            write_ws.column_dimensions['D'].width = 30
+            write_ws.column_dimensions['E'].width = 5
+            write_ws.column_dimensions['F'].width = 30
+            write_ws.column_dimensions['G'].width = 30
+            write_ws.column_dimensions['H'].width = 5
+        
+
+            numOfWord = int(self.editNumOfWord.text())
+            halfNumOfWord = int((numOfWord+1)/2)
+
+            
+            write_ws.row_dimensions[5].height = 30
+
+            for row in write_ws.iter_rows(min_row=1, max_col=7, max_row=5):
+                for cell in row:
+                    cell.font = font_styles
+            
+            for row in write_ws.iter_rows(min_row=6, min_col=2, max_col=7, max_row=halfNumOfWord + 5):
+                for cell in row:
+                    cell.border = thin_border
+
+
+            for i in range(halfNumOfWord):
+                write_ws.row_dimensions[i+6].height = 30
+                write_ws.cell(i+6, 2, i+1)
+                write_ws.cell(i+6, 3, testWordList[i][0])
+                write_ws.cell(i+6, 4, testWordList[i][1])
+                write_ws.cell(i+6, 5, (i+halfNumOfWord+1))
+                if i+halfNumOfWord < numOfWord :
+                    write_ws.cell(i+6, 6, testWordList[i+halfNumOfWord][0])
+                    write_ws.cell(i+6, 7, testWordList[i+halfNumOfWord][1])
+                
+            write_ws.row_dimensions[halfNumOfWord+7].height = 30
+            write_ws.row_dimensions[halfNumOfWord+7].height = 30
+
+            write_ws.page_setup = PrintPageSetup(worksheet=write_ws, scale=50)  
+            write_ws.print_options = PrintOptions(gridLinesSet=True)
+            
+
             try:
-                writer.save()
-                QMessageBox.about(self, "시험지 생성 성공", self._filePath+"\n시험지가 생성되었습니다.")
+                write_wb.save(self.outputFilePath)
+                QMessageBox.about(self, "시험지 생성 성공", self.outputFilePath+"\n시험지가 생성되었습니다.")
 
             except PermissionError:
-                QMessageBox.about(self, "Warning", self._filePath+"\n파일을 사용중이거나, 권한이 없습니다.")
+                QMessageBox.about(self, "Warning", self.outputFilePath+"\n파일을 사용중이거나, 권한이 없습니다.")
 
 
 
